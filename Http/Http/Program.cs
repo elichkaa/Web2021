@@ -19,6 +19,7 @@ namespace Http
             tcpListener.Start();
             while (true)
             {
+                //todo: add more functionalities
                 var client = tcpListener.AcceptTcpClient();
                 using (var stream = client.GetStream())
                 {
