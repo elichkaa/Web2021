@@ -8,7 +8,7 @@ namespace AsynchronousDemo
     public class Chronometer : IChronometer
     {
         private Stopwatch sw = new Stopwatch();
-        private bool isRunning = false;
+        private bool isRunning;
         private List<string> laps = new List<string>();
 
         public string GetTime => @$"{sw.Elapsed.Minutes:D2}:{sw.Elapsed.Seconds:D2}:{sw.Elapsed.Milliseconds:D4}";
@@ -44,13 +44,21 @@ namespace AsynchronousDemo
         {
             this.sw.Reset();
             this.laps.Clear();
+            isRunning = false;
         }
 
         public void AllLaps()
         {
-            for (int i = 0; i < this.laps.Count; i++)
+            if (laps.Count == 0)
             {
-                Console.WriteLine($"{i}. {laps[i]}");
+                Console.WriteLine("Laps: no laps");
+            }
+            else
+            {
+                for (int i = 0; i < this.laps.Count; i++)
+                {
+                    Console.WriteLine($"{i}. {laps[i]}");
+                }
             }
         }
     }
