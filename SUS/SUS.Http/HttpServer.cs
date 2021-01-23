@@ -1,5 +1,4 @@
-﻿
-namespace SUS.Http
+﻿namespace SUS.Http
 {
     using System;
     using System.Collections.Generic;
@@ -12,9 +11,6 @@ namespace SUS.Http
     {
         private IDictionary<string, Func<HttpRequest, HttpResponse>> routingTable =
             new Dictionary<string, Func<HttpRequest, HttpResponse>>();
-
-        private const string NewLine = "\r\n";
-        private const int BufferSize = 4096;
 
         public void AddRoute(string path, Func<HttpRequest, HttpResponse> action)
         {
@@ -45,7 +41,7 @@ namespace SUS.Http
             {
                 //read request
                 int position = 0;
-                byte[] buffer = new byte[BufferSize];
+                byte[] buffer = new byte[HttpConstants.BufferSize];
                 var data = new List<byte>();
                 while (true)
                 {
@@ -64,17 +60,18 @@ namespace SUS.Http
                 }
                 
                 var request = Encoding.UTF8.GetString(data.ToArray());
+                var httpRequest = new HttpRequest(request);
                 Console.WriteLine(request);
 
 
                 //write request + html
-                var resposeHtml = "<h1>Welcome!</h1>";
-                var htmlBytes = Encoding.UTF8.GetBytes(resposeHtml);
-                var responseHttp = "HTTP/1.1 200 OK" + NewLine
-                                                     + "Server: SUS Server 1.0" + NewLine
-                                                     + "Content-Type: text/html" + NewLine
-                                                     + "Content-Length: " + htmlBytes.Length + NewLine
-                                                     + NewLine;
+                var responseHtml = "<h1>Welcome!</h1>";
+                var htmlBytes = Encoding.UTF8.GetBytes(responseHtml);
+                var responseHttp = "HTTP/1.1 200 OK" + HttpConstants.NewLine
+                                                     + "Server: SUS Server 1.0" + HttpConstants.NewLine
+                                                     + "Content-Type: text/html" + HttpConstants.NewLine
+                                                     + "Content-Length: " + htmlBytes.Length + HttpConstants.NewLine
+                                                     + HttpConstants.NewLine;
                 var httpBytes = Encoding.UTF8.GetBytes(responseHttp);
                 await stream.WriteAsync(httpBytes, 0, httpBytes.Length);
                 await stream.WriteAsync(htmlBytes, 0, htmlBytes.Length);
