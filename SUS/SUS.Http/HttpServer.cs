@@ -12,8 +12,9 @@ namespace SUS.Http
     {
         private IDictionary<string, Func<HttpRequest, HttpResponse>> routingTable =
             new Dictionary<string, Func<HttpRequest, HttpResponse>>();
-        private string NewLine = "\r\n";
-        private int BufferSize = 4096;
+
+        private const string NewLine = "\r\n";
+        private const int BufferSize = 4096;
 
         public void AddRoute(string path, Func<HttpRequest, HttpResponse> action)
         {
@@ -42,6 +43,7 @@ namespace SUS.Http
         {
             using (var stream = tcpClient.GetStream())
             {
+                //read request
                 int position = 0;
                 byte[] buffer = new byte[BufferSize];
                 var data = new List<byte>();
@@ -60,16 +62,26 @@ namespace SUS.Http
                     }
                     data.AddRange(buffer);
                 }
-
-                //convert bytes to string
+                
                 var request = Encoding.UTF8.GetString(data.ToArray());
                 Console.WriteLine(request);
-                tcpClient.Close();
+
+
+                //write request + html
+                var resposeHtml = "<h1>Welcome!</h1>";
+                var htmlBytes = Encoding.UTF8.GetBytes(resposeHtml);
+                var responseHttp = "HTTP/1.1 200 OK" + NewLine
+                                                     + "Server: SUS Server 1.0" + NewLine
+                                                     + "Content-Type: text/html" + NewLine
+                                                     + "Content-Length: " + htmlBytes.Length + NewLine
+                                                     + NewLine;
+                var httpBytes = Encoding.UTF8.GetBytes(responseHttp);
+                await stream.WriteAsync(httpBytes, 0, httpBytes.Length);
+                await stream.WriteAsync(htmlBytes, 0, htmlBytes.Length);
             }
-            //read response
 
-
-            //write request + html
+            //close tcpClient
+            tcpClient.Close();
         }
     }
 }
