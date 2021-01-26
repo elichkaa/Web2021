@@ -11,8 +11,11 @@
     {
         public HttpResponse View([CallerMemberName] string viewPath = null)
         {
+            var layout = System.IO.File.ReadAllText("Views/Shared/_Layout.html");
+
             var className = this.GetType().Name.Split("Controller");
-            var responseHtml = System.IO.File.ReadAllText("Views/" + className[0] + "/" + viewPath + ".html");
+            var html = System.IO.File.ReadAllText("Views/" + className[0] + "/" + viewPath + ".html");
+            var responseHtml = layout.Replace("@RenderBody()", html);
             var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
             var response = new HttpResponse("text/html", responseBodyBytes);
             return response;
