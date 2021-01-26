@@ -7,6 +7,11 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SUS.Http\SUS.Http.csproj" />
+    <ProjectReference Include="..\SUS.MvcFramework\SUS.MvcFramework.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>
