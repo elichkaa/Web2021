@@ -10,19 +10,11 @@
 
     public class HttpServer : IHttpServer
     {
-        private IDictionary<string, Func<HttpRequest, HttpResponse>> routingTable =
-            new Dictionary<string, Func<HttpRequest, HttpResponse>>();
+        private List<Route> routingTable;
 
-        public void AddRoute(string path, Func<HttpRequest, HttpResponse> action)
+        public HttpServer(List<Route> routeTable)
         {
-            if (routingTable.ContainsKey(path))
-            {
-                routingTable[path] = action;
-            }
-            else
-            {
-                routingTable.Add(path, action);
-            }
+            this.routingTable = routeTable;
         }
 
         public async Task StartAsync(int port)
@@ -68,10 +60,10 @@
 
                 //write request + html
                 HttpResponse response;
-                if (routingTable.ContainsKey(httpRequest.Path))
+                var route = routingTable.FirstOrDefault(x => x.Path == httpRequest.Path);
+                if (route != null)
                 {
-                    var action = routingTable[httpRequest.Path];
-                    response = action(httpRequest);
+                    response = route.Action(httpRequest);
                 }
                 else
                 {
