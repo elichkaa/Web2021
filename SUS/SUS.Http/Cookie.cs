@@ -5,6 +5,11 @@ namespace SUS.Http
 
     public class Cookie
     {
+        public Cookie(string name, string value)
+        {
+            this.Name = name;
+            this.Value = value;
+        }
         public Cookie(string cookie)
         {
             var cookieParts = cookie.Split("=", 2, StringSplitOptions.RemoveEmptyEntries);

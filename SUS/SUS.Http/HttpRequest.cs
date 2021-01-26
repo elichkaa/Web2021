@@ -19,7 +19,7 @@
             //GET /page HTTP/1.1
             var headerLine = lines[0];
             var headerLineParts = headerLine.Split(' ');
-            this.Method = headerLineParts[0];
+            this.Method = (HttpMethod)Enum.Parse(typeof(HttpMethod), headerLineParts[0], true);
             this.Path = headerLineParts[1];
 
             int lineIndex = 1;
@@ -64,7 +64,7 @@
         public string Path { get; set; }
 
         //GET,POST etc
-        public string Method { get; set; }
+        public HttpMethod Method { get; set; }
         public List<Header> Headers { get; set; }
         public List<Cookie> Cookies { get; set; }
 

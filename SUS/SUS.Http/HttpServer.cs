@@ -57,27 +57,33 @@
                         data.AddRange(bytesWithoutZeroes);
                         break;
                     }
+
                     data.AddRange(buffer);
                 }
-                
+
                 var request = Encoding.UTF8.GetString(data.ToArray());
                 var httpRequest = new HttpRequest(request);
-                Console.WriteLine(httpRequest.ToString());
-
+                //Console.WriteLine(httpRequest.ToString());
+                Console.WriteLine($"{httpRequest.Method} {httpRequest.Path} => {httpRequest.Headers.Count} headers");
 
                 //write request + html
-                var responseHtml = "<h1>Welcome!</h1>";
-                var htmlBytes = Encoding.UTF8.GetBytes(responseHtml);
-                var responseHttp = "HTTP/1.1 200 OK" + HttpConstants.NewLine
-                                                     + "Server: SUS Server 1.0" + HttpConstants.NewLine
-                                                     + "Content-Type: text/html" + HttpConstants.NewLine
-                                                     + $"Set-Cookie: lang=en;Path=/;" + HttpConstants.NewLine
-                                                     + $"Set-Cookie: idk=2;" + HttpConstants.NewLine
-                                                     + "Content-Length: " + htmlBytes.Length + HttpConstants.NewLine
-                                                     + HttpConstants.NewLine;
-                var httpBytes = Encoding.UTF8.GetBytes(responseHttp);
-                await stream.WriteAsync(httpBytes, 0, httpBytes.Length);
-                await stream.WriteAsync(htmlBytes, 0, htmlBytes.Length);
+                HttpResponse response;
+                if (routingTable.ContainsKey(httpRequest.Path))
+                {
+                    var action = routingTable[httpRequest.Path];
+                    response = action(httpRequest);
+                }
+                else
+                {
+                    //404 Not Found
+                    response = new HttpResponse("text/html", new byte[0], HttpStatusCode.NotFound);
+                }
+
+                response.Headers.Add(new Header("Server", "SUS Server 1.0"));
+                response.Cookies.Add(new ResponseCookie("sid", Guid.NewGuid().ToString()) { HttpOnly = true });
+                var responseHeaderBytes = Encoding.UTF8.GetBytes(response.ToString());
+                await stream.WriteAsync(responseHeaderBytes, 0, responseHeaderBytes.Length);
+                await stream.WriteAsync(response.Body, 0, response.Body.Length);
             }
 
             //close tcpClient
