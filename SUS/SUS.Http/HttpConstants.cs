@@ -6,5 +6,7 @@ namespace SUS.Http
         public const string NewLine = "\r\n";
 
         public const int BufferSize = 4096;
+
+        public const string CookieOnRequest = "Cookie";
     }
 }

@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
@@ -61,7 +62,7 @@
                 
                 var request = Encoding.UTF8.GetString(data.ToArray());
                 var httpRequest = new HttpRequest(request);
-                Console.WriteLine(request);
+                Console.WriteLine(httpRequest.ToString());
 
 
                 //write request + html
@@ -70,6 +71,8 @@
                 var responseHttp = "HTTP/1.1 200 OK" + HttpConstants.NewLine
                                                      + "Server: SUS Server 1.0" + HttpConstants.NewLine
                                                      + "Content-Type: text/html" + HttpConstants.NewLine
+                                                     + $"Set-Cookie: lang=en;Path=/;" + HttpConstants.NewLine
+                                                     + $"Set-Cookie: idk=2;" + HttpConstants.NewLine
                                                      + "Content-Length: " + htmlBytes.Length + HttpConstants.NewLine
                                                      + HttpConstants.NewLine;
                 var httpBytes = Encoding.UTF8.GetBytes(responseHttp);
