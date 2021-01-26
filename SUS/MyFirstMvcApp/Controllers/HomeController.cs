@@ -10,7 +10,7 @@ namespace MyFirstMvcApp.Controllers
     {
         public HttpResponse Home(HttpRequest request)
         {
-            return this.View("Views/Home/Home.html");
+            return this.View();
         }
 
         //public HttpResponse About(HttpRequest request)
